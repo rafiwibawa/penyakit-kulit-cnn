@@ -1,0 +1,6 @@
+CNN (MobileNet) sudah "melihat" RGB, tapi bukan mengambil langsung. 
+Dia memproses dan menyaring informasi itu jadi representasi fitur 
+yang lebih bermakna untuk klasifikasi atau prediksi.
+
+Kalau kamu masih butuh fitur RGB mentah atau HSV/gray histogram, 
+bisa juga ditambahkan secara manual — tapi biasanya CNN saja sudah jauh lebih kuat.

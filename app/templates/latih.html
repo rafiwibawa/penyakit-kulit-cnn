@@ -1,0 +1,116 @@
+
+{# templates/dashboard.html #}
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+{% endblock %}
+
+{% block content %} 
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Data Latih</h1>
+  <div class="d-flex align-items-center gap-2">
+    <form method="post" action="{{ url_for('latih.train_model') }}">
+      <button type="submit" class="btn btn-secondary mr-2">Latih Data</button>
+    </form> 
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+      Add Image
+    </button>
+  </div>
+</div>
+{% if latest_log %}
+<div class="alert alert-info">
+  Model terakhir dilatih: <strong>{{ latest_log.trained_at.strftime('%Y-%m-%d %H:%M') }}</strong>,
+  Akurasi: <strong>{{ '{:.2f}%'.format(latest_log.accuracy * 100) }}</strong>,
+  F1-Score: <strong>{{ '{:.2f}'.format(latest_log.f1_score) }}</strong>
+</div>
+{% endif %}
+<div class="row"> 
+  <div class="col-lg-12"> 
+    <div class="card shadow mb-4"> 
+        <div class="card-body">
+          <table id="latihTable" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Gambar</th>
+                    <th>Waktu Upload</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for img in images %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>
+                      <img src="{{ url_for('root.uploaded_file', filename=img.image_path.split('/')[-1]) }}" width="100">
+                    </td>
+                    <td>{{ img.upload_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ img.note }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+        </div>
+    </div> 
+  </div>
+</div> 
+ 
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          Add Image Latih
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="post" enctype="multipart/form-data">
+        <div class="modal-body"> 
+          <div class="form-group">
+            <label for="images">Pilih Gambar:</label>
+            <input type="file" name="images" id="images" class="form-control-file" accept="image/*" multiple required>
+          </div>
+        
+          <div class="form-group">
+            <label for="note">Jenis Penyakit:</label>
+            <select name="note" id="note" class="form-control" required>
+              <option value="karsinoma sel basal" selected>Karsinoma Sel Basal</option>
+              <option value="karsinoma sel skuamosa">Karsinoma Sel Skuamosa</option>
+              <option value="melanoma maligna">Melanoma Maligna</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+  $(document).ready(function() {
+      $('#latihTable').DataTable({
+          pageLength: 5, // 5 per halaman
+          lengthMenu: [5, 10, 25, 50, 100]
+      });
+  });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+  $(document).ready(function() {
+      $('#images-table').DataTable();
+  });
+</script>
+{% endblock %}
