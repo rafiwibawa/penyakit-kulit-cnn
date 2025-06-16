@@ -77,6 +77,7 @@ def test_model():
         "f1_score": hasil["f1_score"],
         "report": short_report
     }
+    
     print("[Set Session] session['hasil_uji']:", session['hasil_uji'])
     flash("Model berhasil diuji pada data uji.")
     return redirect(url_for('uji.upload_uji'))

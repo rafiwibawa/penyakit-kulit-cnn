@@ -21,7 +21,9 @@ class Patient(db.Model):
     phone = db.Column(db.String(20))
     address = db.Column(db.Text)
     created_at = db.Column(db.DateTime)
-    updated_at = db.Column(db.DateTime)
+    updated_at = db.Column(db.DateTime) 
+    diagnoses = db.relationship('Diagnosis', backref='patient', lazy=True)
+    images = db.relationship('Image', back_populates='patient')  
 
 class Image(db.Model):
     __tablename__ = 'images'
@@ -35,6 +37,10 @@ class Image(db.Model):
     tipe_data = db.Column(db.String(20), nullable=False, default='data_latih')
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
+    prediction = db.relationship('Prediction', backref='image', uselist=False)
+    patient = db.relationship('Patient', back_populates='images')
+
+
 
 class Prediction(db.Model):
     __tablename__ = 'predictions'

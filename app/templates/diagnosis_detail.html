@@ -1,0 +1,96 @@
+
+{# templates/dashboard.html #}
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+{% endblock %}
+
+{% block content %} 
+
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Halaman Detail Diagnosa</h1>
+  <div class="d-flex align-items-center gap-2"> 
+    
+  </div>
+</div> 
+<div class="row"> 
+  <div class="col-lg-12"> 
+    <div class="card shadow mb-4"> 
+      <div class="card-body">
+        <h5 class="mb-3">🧍‍♂️ Informasi Pasien</h5>
+        <table class="table table-bordered">
+          <tr>
+            <th>Nama</th>
+            <td>{{ patient.name }}</td>
+          </tr>
+          <tr>
+            <th>Jenis Kelamin</th>
+            <td>{{ 'Laki-laki' if patient.gender == 'male' else 'Perempuan' }}</td>
+          </tr>
+          <tr>
+            <th>Tanggal Lahir</th>
+            <td>{{ patient.birth_date.strftime('%d-%m-%Y') if patient.birth_date else '-' }}</td>
+          </tr>
+          <tr>
+            <th>Telepon</th>
+            <td>{{ patient.phone or '-' }}</td>
+          </tr>
+          <tr>
+            <th>Alamat</th>
+            <td>{{ patient.address or '-' }}</td>
+          </tr>
+        </table>
+        <hr>
+       
+        <h5 class="mb-3">🖼️ Gambar Dermatologi & Diagnosa</h5>
+
+        {% if patient.images %}
+          {% for image in patient.images %}
+            <div class="mb-4">
+              <h6>Gambar {{ loop.index }}</h6>
+              <img src="{{ url_for('root.uploaded_file', filename=image.image_path.split('/')[-1]) }}"
+                  alt="Image"
+                  class="img-fluid mb-2"
+                  style="max-width: 300px; border: 1px solid #ccc; padding: 5px;">
+
+              {% if image.prediction %}
+                <table class="table table-bordered">
+                  <tr>
+                    <th>Model Version</th>
+                    <td>{{ image.prediction.model_version }}</td>
+                  </tr>
+                  <tr>
+                    <th>Predicted Label</th>
+                    <td><strong>{{ image.prediction.predicted_label }}</strong></td>
+                  </tr>
+                  <tr>
+                    <th>Confidence</th>
+                    <td>{{ '%.2f'|format(image.prediction.confidence * 100) }}%</td>
+                  </tr>
+                  <tr>
+                    <th>Waktu Prediksi</th>
+                    <td>{{ image.prediction.prediction_time.strftime('%d-%m-%Y %H:%M') if image.prediction.prediction_time else '-' }}</td>
+                  </tr>
+                </table>
+              {% else %}
+                <div class="alert alert-warning">Belum ada hasil prediksi untuk gambar ini.</div>
+              {% endif %}
+            </div>
+            <hr>
+          {% endfor %}
+        {% else %}
+          <div class="alert alert-info">Pasien ini belum memiliki gambar dermatologi.</div>
+        {% endif %} 
+      </div> 
+    </div> 
+  </div>
+</div> 
+  
+{% endblock %}
+
+{% block scripts %}
+ 
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+{% endblock %}

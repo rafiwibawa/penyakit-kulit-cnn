@@ -10,7 +10,7 @@ def index():
     # Ambil jumlah per label untuk data_latih
     data_latih = (
         db.session.query(Image.note, func.count(Image.id))
-        .filter(Image.tipe_data == 'data_latih')
+        .filter(Image.tipe_data == 'data_latih', Image.note != None)
         .group_by(Image.note)
         .all()
     )
@@ -18,7 +18,7 @@ def index():
     # Ambil jumlah per label untuk data_uji
     data_uji = (
         db.session.query(Image.note, func.count(Image.id))
-        .filter(Image.tipe_data == 'data_uji')
+        .filter(Image.tipe_data == 'data_uji', Image.note != None)
         .group_by(Image.note)
         .all()
     )

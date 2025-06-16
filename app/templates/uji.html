@@ -18,8 +18,7 @@
       Add Image
     </button>
   </div>
-</div>
-
+</div> 
 {% with hasil = session.get('hasil_uji') %}
   {% if hasil %}
     <div class="alert alert-info mt-3">
@@ -31,8 +30,6 @@
     {% set _ = session.pop('hasil_uji') %}
   {% endif %}
 {% endwith %}
-
-<!-- <pre>{{ session }}</pre> -->
 
 <div class="row"> 
   <div class="col-lg-12"> 
