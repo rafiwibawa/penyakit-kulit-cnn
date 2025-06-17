@@ -81,7 +81,7 @@ def test_image_model():
 
     for img in images:
         features = extract_features(img.image_path)
-        if features is not None:
+        if features is not None and img.note is not None:
             X_test.append(features)
             y_true.append(img.note)
 

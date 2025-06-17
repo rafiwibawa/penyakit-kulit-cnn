@@ -48,7 +48,10 @@
                 {% for img in images %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    <td>
+                    <td> 
+                        <!-- {% set filename = img.image_path.split('/')[-1].split('\\')[-1] %}
+                        <img src="{{ url_for('root.uploaded_file', filename=filename) }}" width="100"> -->
+                        
                       <img src="{{ url_for('root.uploaded_file', filename=img.image_path.split('/')[-1]) }}" width="100">
                     </td>
                     <td>{{ img.upload_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
