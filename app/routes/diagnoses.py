@@ -111,3 +111,33 @@ def index():
 def detail(patient_id):
     ptn = Patient.query.get_or_404(patient_id)
     return render_template('diagnosis_detail.html', patient=ptn)
+
+@bp_diagnoses.route('/delete/<int:patient_id>', methods=['POST'])
+def delete(patient_id):
+    patient = Patient.query.get_or_404(patient_id)
+
+    try:
+        # Hapus semua gambar dan prediksi yang terkait
+        for image in patient.images:
+            # Hapus file fisik dari sistem
+            if image.image_path and os.path.exists(image.image_path):
+                os.remove(image.image_path)
+
+            # Hapus prediksi terkait gambar
+            Prediction.query.filter_by(image_id=image.id).delete()
+
+        # Hapus gambar
+        Image.query.filter_by(patient_id=patient.id).delete()
+
+        # Hapus diagnosis
+        Diagnosis.query.filter_by(patient_id=patient.id).delete()
+
+        # Terakhir, hapus pasien
+        db.session.delete(patient)
+        db.session.commit()
+        flash("✅ Data pasien berhasil dihapus.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"❌ Gagal menghapus pasien: {e}", "danger")
+
+    return redirect(url_for('diagnoses.index'))

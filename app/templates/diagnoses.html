@@ -60,6 +60,9 @@
                   <a href="{{ url_for('diagnoses.detail', patient_id=patient.id) }}" class="btn btn-sm btn-primary">
                     Detail
                   </a>
+                  <form method="POST" action="{{ url_for('diagnoses.delete', patient_id=patient.id) }}">
+                    <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                  </form>  
                 </td>
               </tr>
               {% endfor %}

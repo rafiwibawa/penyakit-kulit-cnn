@@ -68,11 +68,21 @@ def upload_latih():
     latest_log = ModelLog.query.order_by(ModelLog.trained_at.desc()).first()
     return render_template('latih.html', images=images, latest_log=latest_log)
 
-
-
 @bp_latih.route('/train-model', methods=['POST'])
 def train_model():
     from train_model import train_image_model
     train_image_model()
     flash('Pelatihan model selesai.', 'success')
+    return redirect(url_for('latih.upload_latih'))
+
+@bp_latih.route('/delete-image/<int:image_id>', methods=['POST'])
+def delete_image(image_id):
+    image = Image.query.get_or_404(image_id)
+    # Hapus file dari sistem file
+    if image.image_path and os.path.exists(image.image_path):
+        os.remove(image.image_path)
+
+    db.session.delete(image)
+    db.session.commit()
+    flash('Gambar berhasil dihapus.', 'success')
     return redirect(url_for('latih.upload_latih'))

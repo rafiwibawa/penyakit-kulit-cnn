@@ -81,3 +81,16 @@ def test_model():
     print("[Set Session] session['hasil_uji']:", session['hasil_uji'])
     flash("Model berhasil diuji pada data uji.")
     return redirect(url_for('uji.upload_uji'))
+
+
+@bp_uji.route('/delete-image/<int:image_id>', methods=['POST'])
+def delete_image(image_id):
+    image = Image.query.get_or_404(image_id)
+    # Hapus file dari sistem file
+    if image.image_path and os.path.exists(image.image_path):
+        os.remove(image.image_path)
+
+    db.session.delete(image)
+    db.session.commit()
+    flash('Gambar berhasil dihapus.', 'success')
+    return redirect(url_for('latih.upload_latih'))

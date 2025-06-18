@@ -36,7 +36,8 @@
                     <th>ID</th>
                     <th>Gambar</th>
                     <th>Waktu Upload</th>
-                    <th>Note</th>
+                    <th>Note</th> 
+                    <th>Aksi</th> 
                 </tr>
             </thead>
             <tbody>
@@ -47,7 +48,12 @@
                       <img src="{{ url_for('root.uploaded_file', filename=img.image_path.split('/')[-1]) }}" width="100">
                     </td>
                     <td>{{ img.upload_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                    <td>{{ img.note }}</td>
+                    <td>{{ img.note }}</td> 
+                    <td>
+                      <form method="POST" action="{{ url_for('latih.delete_image', image_id=img.id) }}">
+                        <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                      </form>                    
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -42,6 +42,7 @@
                     <th>Gambar</th>
                     <th>Waktu Upload</th>
                     <th>Note</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,6 +57,11 @@
                     </td>
                     <td>{{ img.upload_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                     <td>{{ img.note }}</td>
+                    <td>
+                      <form method="POST" action="{{ url_for('uji.delete_image', image_id=img.id) }}">
+                        <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                      </form>                    
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
