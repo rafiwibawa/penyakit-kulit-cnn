@@ -9,10 +9,10 @@
 {% block content %} 
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-  <h1 class="h3 mb-0 text-gray-800">Data uji</h1>
+  <h1 class="h3 mb-0 text-gray-800">Data</h1>
   <div class="d-flex align-items-center gap-2">
     <form method="post" action="{{ url_for('uji.test_model') }}">
-      <button type="submit" class="btn btn-secondary mr-2">uji Data</button>
+      <button type="submit" class="btn btn-secondary mr-2">Training Model</button>
     </form> 
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
       Add Image
@@ -22,14 +22,32 @@
 {% with hasil = session.get('hasil_uji') %}
   {% if hasil %}
     <div class="alert alert-info mt-3">
-      <h5>Hasil Uji Model:</h5>
-      <p><strong>Akurasi:</strong> {{ hasil.accuracy }}</p>
-      <p><strong>F1 Score:</strong> {{ hasil.f1_score }}</p>
-      <pre style="white-space: pre-wrap;">{{ hasil.report }}</pre>
+      <h5>📊 Hasil Uji Model</h5>
+
+      <p><strong>Jumlah Data:</strong> 
+        Latih: {{ hasil.jumlah_data.latih }}, 
+        Uji: {{ hasil.jumlah_data.uji }}
+      </p>
+
+      <hr>
+
+      <h6>🧩 Hasil Data Latih</h6>
+      <p><strong>Akurasi:</strong> {{ hasil.train_result.accuracy }}</p>
+      <p><strong>F1 Score:</strong> {{ hasil.train_result.f1_score }}</p>
+      <pre style="white-space: pre-wrap;">{{ hasil.train_result.report }}</pre>
+
+      <hr>
+
+      <h6>🧪 Hasil Data Uji</h6>
+      <p><strong>Akurasi:</strong> {{ hasil.test_result.accuracy }}</p>
+      <p><strong>F1 Score:</strong> {{ hasil.test_result.f1_score }}</p>
+      <pre style="white-space: pre-wrap;">{{ hasil.test_result.report }}</pre>
     </div>
+
     {% set _ = session.pop('hasil_uji') %}
   {% endif %}
 {% endwith %}
+
 
 <div class="row"> 
   <div class="col-lg-12"> 
@@ -42,6 +60,7 @@
                     <th>Gambar</th>
                     <th>Waktu Upload</th>
                     <th>Note</th>
+                    <th>Tipe</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -57,6 +76,7 @@
                     </td>
                     <td>{{ img.upload_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
                     <td>{{ img.note }}</td>
+                    <td>{{ img.tipe_data }}</td>
                     <td>
                       <form method="POST" action="{{ url_for('uji.delete_image', image_id=img.id) }}">
                         <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
@@ -96,6 +116,14 @@
               <option value="karsinoma sel basal" selected>Karsinoma Sel Basal</option>
               <option value="karsinoma sel skuamosa">Karsinoma Sel Skuamosa</option>
               <option value="melanoma maligna">Melanoma Maligna</option>
+            </select>
+          </div>
+        
+          <div class="form-group">
+            <label for="tipe_data">Tipe Data</label>
+            <select name="tipe_data" id="tipe_data" class="form-control" required>
+              <option value="data_latih" selected>Latih</option>
+              <option value="data_uji">Uji</option> 
             </select>
           </div>
         </div>

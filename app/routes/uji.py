@@ -23,6 +23,7 @@ def upload_uji():
 
         files = request.files.getlist('images') 
         note = request.form.get('note', 'data_uji')
+        tipe_data = request.form.get('tipe_data', 'data_uji')
         patient_id = None
         uploaded_by = None
 
@@ -47,7 +48,7 @@ def upload_uji():
                     created_at=datetime.utcnow(),
                     updated_at=datetime.utcnow(),
                     note=note,
-                    tipe_data='data_uji'
+                    tipe_data=tipe_data,
                 )
                 db.session.add(new_image)
                 saved_count += 1
@@ -60,26 +61,58 @@ def upload_uji():
 
         return redirect(url_for('uji.upload_uji'))
 
-    images = Image.query.filter_by(tipe_data='data_uji').order_by(Image.upload_time.desc()).all() 
+    images = Image.query.order_by(Image.upload_time.desc()).all() 
     print("[Upload Uji] Session in GET:", dict(session))
     return render_template('uji.html', images=images)
 
+# @bp_uji.route('/uji-model', methods=["GET", "POST"])
+# def test_model():
+#     from train_model import test_image_modelv3
+#     hasil = test_image_modelv3()  # misalnya return dict berisi 'accuracy', 'f1_score', 'report'
+    
+#     # Potong report hanya baris pertama (atau sebagian kecil)
+#     short_report = "\n".join(hasil["report"].split("\n")[:5]) + "\n..."
+
+#     session['hasil_uji'] = {
+#         "accuracy": hasil["accuracy"],
+#         "f1_score": hasil["f1_score"],
+#         "report": short_report
+#     }
+    
+#     print("[Set Session] session['hasil_uji']:", session['hasil_uji'])
+#     flash("Model berhasil diuji pada data uji.")
+#     return redirect(url_for('uji.upload_uji'))
+
 @bp_uji.route('/uji-model', methods=["GET", "POST"])
 def test_model():
-    from train_model import test_image_model
-    hasil = test_image_model()  # misalnya return dict berisi 'accuracy', 'f1_score', 'report'
-    
-    # Potong report hanya baris pertama (atau sebagian kecil)
-    short_report = "\n".join(hasil["report"].split("\n")[:5]) + "\n..."
+    from train_model import test_image_modelv3
+    hasil = test_image_modelv3()  # return dict berisi train_result & test_result
 
+    if not hasil or "error" in hasil:
+        flash("Gagal menguji model. Pastikan data latih dan uji tersedia.")
+        return redirect(url_for('uji.upload_uji'))
+
+    # Ambil report singkat dari train & test
+    short_report_train = "\n".join(hasil["train_result"]["report"].split("\n")[:5]) + "\n..."
+    short_report_test = "\n".join(hasil["test_result"]["report"].split("\n")[:5]) + "\n..."
+
+    # Simpan ke session
     session['hasil_uji'] = {
-        "accuracy": hasil["accuracy"],
-        "f1_score": hasil["f1_score"],
-        "report": short_report
+        "jumlah_data": hasil["jumlah_data"],
+        "train_result": {
+            "accuracy": hasil["train_result"]["accuracy"],
+            "f1_score": hasil["train_result"]["f1_score"],
+            "report": short_report_train
+        },
+        "test_result": {
+            "accuracy": hasil["test_result"]["accuracy"],
+            "f1_score": hasil["test_result"]["f1_score"],
+            "report": short_report_test
+        }
     }
-    
+
     print("[Set Session] session['hasil_uji']:", session['hasil_uji'])
-    flash("Model berhasil diuji pada data uji.")
+    flash("Model berhasil dilatih dan diuji.")
     return redirect(url_for('uji.upload_uji'))
 
 
