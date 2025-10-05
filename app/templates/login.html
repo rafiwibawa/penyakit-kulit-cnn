@@ -36,12 +36,16 @@
                         <!-- Nested Row within Card Body -->
                         <div class="row">
                             <div class="col-lg-6 d-none d-lg-block">
-
+                                <img 
+                                    src="{{ url_for('static', filename='img/logo.png') }}" 
+                                    alt="Logo" 
+                                    class="img-fluid"  
+                                >
                             </div>
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+                                        <h1 class="h4 text-gray-900 mb-4">Skin Cancer Predict</h1>
                                     </div>
                                     {% with messages = get_flashed_messages(with_categories=true) %}
                                       {% if messages %}
