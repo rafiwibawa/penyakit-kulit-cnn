@@ -65,23 +65,23 @@ def upload_uji():
     print("[Upload Uji] Session in GET:", dict(session))
     return render_template('uji.html', images=images)
 
-# @bp_uji.route('/uji-model', methods=["GET", "POST"])
-# def test_model():
-#     from train_model import test_image_modelv3
-#     hasil = test_image_modelv3()  # misalnya return dict berisi 'accuracy', 'f1_score', 'report'
+@bp_uji.route('/uji-model-old', methods=["GET", "POST"])
+def test_model_old():
+    from train_model import test_image_modelv2
+    hasil = test_image_modelv2()  # misalnya return dict berisi 'accuracy', 'f1_score', 'report'
     
-#     # Potong report hanya baris pertama (atau sebagian kecil)
-#     short_report = "\n".join(hasil["report"].split("\n")[:5]) + "\n..."
+    # Potong report hanya baris pertama (atau sebagian kecil)
+    short_report = "\n".join(hasil["report"].split("\n")[:5]) + "\n..."
 
-#     session['hasil_uji'] = {
-#         "accuracy": hasil["accuracy"],
-#         "f1_score": hasil["f1_score"],
-#         "report": short_report
-#     }
+    session['hasil_uji'] = {
+        "accuracy": hasil["accuracy"],
+        "f1_score": hasil["f1_score"],
+        "report": short_report
+    }
     
-#     print("[Set Session] session['hasil_uji']:", session['hasil_uji'])
-#     flash("Model berhasil diuji pada data uji.")
-#     return redirect(url_for('uji.upload_uji'))
+    print("[Set Session] session['hasil_uji']:", session['hasil_uji'])
+    flash("Model berhasil diuji pada data uji.")
+    return redirect(url_for('uji.upload_uji'))
 
 @bp_uji.route('/uji-model', methods=["GET", "POST"])
 def test_model():

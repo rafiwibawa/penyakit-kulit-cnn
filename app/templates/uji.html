@@ -14,6 +14,9 @@
     <form method="post" action="{{ url_for('uji.test_model') }}">
       <button type="submit" class="btn btn-secondary mr-2">Training Model</button>
     </form> 
+    <form method="post" action="{{ url_for('uji.test_model_old') }}">
+      <button type="submit" class="btn btn-secondary mr-2">Uji</button>
+    </form> 
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
       Add Image
     </button>
@@ -48,6 +51,18 @@
   {% endif %}
 {% endwith %}
 
+<!-- {% if 'hasil_uji' in session %}
+<div class="row mb-3">
+  <div class="col-lg-12">
+    <div class="alert alert-info shadow-sm">
+      <h5 class="mb-2"><strong>Hasil Uji Model</strong></h5>
+      <p><strong>Akurasi:</strong> {{ session['hasil_uji']['accuracy'] }}</p>
+      <p><strong>F1 Score:</strong> {{ session['hasil_uji']['f1_score'] }}</p>
+      <pre class="bg-light p-2 rounded" style="white-space: pre-wrap;">{{ session['hasil_uji']['report'] }}</pre>
+    </div>
+  </div>
+</div>
+{% endif %} -->
 
 <div class="row"> 
   <div class="col-lg-12"> 
