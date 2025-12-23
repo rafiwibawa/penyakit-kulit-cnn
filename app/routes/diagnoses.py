@@ -8,6 +8,9 @@ from app import db
 from app.models import Image
 from app.models import Patient, Prediction, Diagnosis
 from utils.feature_extractor import extract_features
+from flask import Blueprint, render_template, make_response
+from io import BytesIO
+from xhtml2pdf import pisa  
 
 bp_diagnoses = Blueprint('diagnoses', __name__)
 UPLOAD_FOLDER = 'uploads'
@@ -111,6 +114,7 @@ def index():
 def detail(patient_id):
     ptn = Patient.query.get_or_404(patient_id)
     return render_template('diagnosis_detail.html', patient=ptn)
+ 
 
 @bp_diagnoses.route('/delete/<int:patient_id>', methods=['POST'])
 def delete(patient_id):
@@ -141,3 +145,28 @@ def delete(patient_id):
         flash(f"❌ Gagal menghapus pasien: {e}", "danger")
 
     return redirect(url_for('diagnoses.index'))
+
+@bp_diagnoses.route('/export_pdf/<int:patient_id>')
+def export_pdf(patient_id):
+    patient = Patient.query.get_or_404(patient_id)
+
+    html = render_template(
+        'diagnosis_pdf.html',
+        patient=patient,
+        diagnoses=patient.diagnoses,
+        images=patient.images,
+        generated_at=datetime.now()
+    )
+
+    pdf = BytesIO()
+    result = pisa.CreatePDF(html, dest=pdf)
+
+    if result.err:
+        return "Gagal membuat PDF", 500
+
+    response = make_response(pdf.getvalue())
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = (
+        f'inline; filename=laporan_diagnosis_pasien_{patient.id}.pdf'
+    )
+    return response

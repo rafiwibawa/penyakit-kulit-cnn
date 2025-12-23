@@ -57,6 +57,10 @@
                   </ul>
                 </td>
                 <td>
+                  
+                  <a href="{{ url_for('diagnoses.export_pdf', patient_id=patient.id) }}" class="btn btn-sm btn-success">
+                    PDF
+                  </a>
                   <a href="{{ url_for('diagnoses.detail', patient_id=patient.id) }}" class="btn btn-sm btn-primary">
                     Detail
                   </a>
