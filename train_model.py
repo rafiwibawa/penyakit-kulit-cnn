@@ -245,8 +245,16 @@ def test_image_modelv3():
 
     # ======== Simpan model & encoder ========
     os.makedirs("model", exist_ok=True)
-    joblib.dump(model, "model/random_forest.pkl")
-    joblib.dump(label_encoder, "model/label_encoder.pkl")
+    # joblib.dump(model, "model/random_forest.pkl")
+    # joblib.dump(label_encoder, "model/label_encoder.pkl")
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))  
+    PROJECT_DIR = BASE_DIR  # train_model.py di root
+    MODEL_DIR = os.path.join(PROJECT_DIR, "model")
+
+    os.makedirs(MODEL_DIR, exist_ok=True)
+
+    joblib.dump(model, os.path.join(MODEL_DIR, "random_forest.pkl"))
+    joblib.dump(label_encoder, os.path.join(MODEL_DIR, "label_encoder.pkl"))
 
     # ======== Evaluasi pada data latih ========
     y_pred_train = model.predict(X_train)
