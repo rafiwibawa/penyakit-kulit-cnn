@@ -191,112 +191,120 @@ def test_image_modelv2():
     }
 
 def test_image_modelv3():
-    from sklearn.ensemble import RandomForestClassifier
-    from sklearn.preprocessing import LabelEncoder
-    from sklearn.metrics import accuracy_score, f1_score, classification_report
-    import joblib, os
-    import numpy as np
+    try:
+        from sklearn.ensemble import RandomForestClassifier
+        from sklearn.preprocessing import LabelEncoder
+        from sklearn.metrics import accuracy_score, f1_score, classification_report
+        import joblib, os
+        import numpy as np
 
-    # ======== Ambil data dari database ========
-    data_latih = Image.query.filter_by(tipe_data='data_latih').all()
-    data_uji = Image.query.filter_by(tipe_data='data_uji').all()
+        # ======== Ambil data dari database ========
+        data_latih = Image.query.filter_by(tipe_data='data_latih').all()
+        data_uji = Image.query.filter_by(tipe_data='data_uji').all()
 
-    if not data_latih:
-        print("❌ Tidak ada data latih ditemukan.")
-        return {"error": "Tidak ada data latih ditemukan."}
-    if not data_uji:
-        print("❌ Tidak ada data uji ditemukan.")
-        return {"error": "Tidak ada data uji ditemukan."}
+        if not data_latih:
+            print("❌ Tidak ada data latih ditemukan.")
+            return {"error": "Tidak ada data latih ditemukan."}
+        if not data_uji:
+            print("❌ Tidak ada data uji ditemukan.")
+            return {"error": "Tidak ada data uji ditemukan."}
 
-    # ======== Ekstraksi fitur ========
-    X_train, y_train, X_test, y_true = [], [], [], []
+        # ======== Ekstraksi fitur ========
+        X_train, y_train, X_test, y_true = [], [], [], []
 
-    for img in data_latih:
-        features = extract_features(img.image_path)
-        if features is not None and img.note is not None:
-            X_train.append(features)
-            y_train.append(img.note)
+        for img in data_latih:
+            features = extract_features(img.image_path)
+            if features is not None and img.note is not None:
+                X_train.append(features)
+                y_train.append(img.note)
 
-    for img in data_uji:
-        features = extract_features(img.image_path)
-        if features is not None and img.note is not None:
-            X_test.append(features)
-            y_true.append(img.note)
+        for img in data_uji:
+            features = extract_features(img.image_path)
+            if features is not None and img.note is not None:
+                X_test.append(features)
+                y_true.append(img.note)
 
-    if not X_train or not X_test:
-        print("⚠️ Fitur data latih atau uji kosong.")
-        return {"error": "Fitur data latih atau uji kosong."}
+        if not X_train or not X_test:
+            print("⚠️ Fitur data latih atau uji kosong.")
+            return {"error": "Fitur data latih atau uji kosong."}
 
-    X_train = np.array(X_train)
-    X_test = np.array(X_test)
+        X_train = np.array(X_train)
+        X_test = np.array(X_test)
 
-    # ======== Encode label ========
-    label_encoder = LabelEncoder()
-    y_train_encoded = label_encoder.fit_transform(y_train)
-    y_true_encoded = label_encoder.transform(y_true)
+        # ======== Encode label ========
+        label_encoder = LabelEncoder()
+        y_train_encoded = label_encoder.fit_transform(y_train)
+        y_true_encoded = label_encoder.transform(y_true)
 
-    # ======== Latih model Random Forest ========
-    model = RandomForestClassifier(
-        n_estimators=100,
-        random_state=42,
-        n_jobs=-1
-    )
-    model.fit(X_train, y_train_encoded)
+        # ======== Latih model Random Forest ========
+        model = RandomForestClassifier(
+            n_estimators=100,
+            random_state=42,
+            n_jobs=-1
+        )
+        model.fit(X_train, y_train_encoded)
 
-    # ======== Simpan model & encoder ========
-    os.makedirs("model", exist_ok=True)
-    # joblib.dump(model, "model/random_forest.pkl")
-    # joblib.dump(label_encoder, "model/label_encoder.pkl")
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))  
-    PROJECT_DIR = BASE_DIR  # train_model.py di root
-    MODEL_DIR = os.path.join(PROJECT_DIR, "model")
+        # ======== Simpan model & encoder ========
+        os.makedirs("model", exist_ok=True)
+        # joblib.dump(model, "model/random_forest.pkl")
+        # joblib.dump(label_encoder, "model/label_encoder.pkl")
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))  
+        PROJECT_DIR = BASE_DIR  # train_model.py di root
+        MODEL_DIR = os.path.join(PROJECT_DIR, "model")
 
-    os.makedirs(MODEL_DIR, exist_ok=True)
+        os.makedirs(MODEL_DIR, exist_ok=True)
 
-    joblib.dump(model, os.path.join(MODEL_DIR, "random_forest.pkl"))
-    joblib.dump(label_encoder, os.path.join(MODEL_DIR, "label_encoder.pkl"))
+        joblib.dump(model, os.path.join(MODEL_DIR, "random_forest.pkl"))
+        joblib.dump(label_encoder, os.path.join(MODEL_DIR, "label_encoder.pkl"))
 
-    # ======== Evaluasi pada data latih ========
-    y_pred_train = model.predict(X_train)
-    acc_train = accuracy_score(y_train_encoded, y_pred_train)
-    f1_train = f1_score(y_train_encoded, y_pred_train, average='weighted')
-    report_train = classification_report(
-        y_train_encoded,
-        y_pred_train,
-        labels=list(range(len(label_encoder.classes_))),
-        target_names=label_encoder.classes_,
-        zero_division=0
-    )
+        # ======== Evaluasi pada data latih ========
+        y_pred_train = model.predict(X_train)
+        acc_train = accuracy_score(y_train_encoded, y_pred_train)
+        f1_train = f1_score(y_train_encoded, y_pred_train, average='weighted')
+        report_train = classification_report(
+            y_train_encoded,
+            y_pred_train,
+            labels=list(range(len(label_encoder.classes_))),
+            target_names=label_encoder.classes_,
+            zero_division=0
+        )
 
-    # ======== Evaluasi pada data uji ========
-    y_pred_test = model.predict(X_test)
-    acc_test = accuracy_score(y_true_encoded, y_pred_test)
-    f1_test = f1_score(y_true_encoded, y_pred_test, average='weighted')
-    report_test = classification_report(
-        y_true_encoded,
-        y_pred_test,
-        labels=list(range(len(label_encoder.classes_))),
-        target_names=label_encoder.classes_,
-        zero_division=0
-    )
+        # ======== Evaluasi pada data uji ========
+        y_pred_test = model.predict(X_test)
+        acc_test = accuracy_score(y_true_encoded, y_pred_test)
+        f1_test = f1_score(y_true_encoded, y_pred_test, average='weighted')
+        report_test = classification_report(
+            y_true_encoded,
+            y_pred_test,
+            labels=list(range(len(label_encoder.classes_))),
+            target_names=label_encoder.classes_,
+            zero_division=0
+        )
 
-    print("✅ Model berhasil dilatih dan diuji.")
-    print(f"Jumlah data latih: {len(X_train)}, data uji: {len(X_test)}")
-    print(f"Akurasi latih: {acc_train:.4f}, Akurasi uji: {acc_test:.4f}")
+        print("✅ Model berhasil dilatih dan diuji.")
+        print(f"Jumlah data latih: {len(X_train)}, data uji: {len(X_test)}")
+        print(f"Akurasi latih: {acc_train:.4f}, Akurasi uji: {acc_test:.4f}")
 
-    return {
-        "jumlah_data": {
-            "latih": len(X_train),
-            "uji": len(X_test)
-        },
-        "train_result": {
-            "accuracy": f"{acc_train * 100:.2f}%",
-            "f1_score": f"{f1_train:.2f}",
-            "report": report_train
-        },
-        "test_result": {
-            "accuracy": f"{acc_test * 100:.2f}%",
-            "f1_score": f"{f1_test:.2f}",
-            "report": report_test
+        return {
+            "jumlah_data": {
+                "latih": len(X_train),
+                "uji": len(X_test)
+            },
+            "train_result": {
+                "accuracy": f"{acc_train * 100:.2f}%",
+                "f1_score": f"{f1_train:.2f}",
+                "report": report_train
+            },
+            "test_result": {
+                "accuracy": f"{acc_test * 100:.2f}%",
+                "f1_score": f"{f1_test:.2f}",
+                "report": report_test
+            }
         }
-    }
+
+    except Exception as e:
+        print("❌ ERROR test_image_modelv3:", e)
+        return {
+            "error": True,
+            "message": str(e)
+        }
