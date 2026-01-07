@@ -70,7 +70,9 @@ def upload_uji():
 def test_model_old():
     from train_model import test_image_modelv2
     hasil = test_image_modelv2()  # misalnya return dict berisi 'accuracy', 'f1_score', 'report'
-    
+    if not hasil or hasil.get("error"):
+        flash(hasil.get("message", "Gagal uji model"), "danger")
+        return redirect(url_for("uji.upload_uji"))
     # Potong report hanya baris pertama (atau sebagian kecil)
     short_report = "\n".join(hasil["report"].split("\n")[:5]) + "\n..."
 

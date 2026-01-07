@@ -126,16 +126,20 @@ def test_image_modelv2():
     images = Image.query.filter_by(tipe_data='data_uji').all()
 
     if not images:
-        print("Tidak ada data uji ditemukan.")
-        return
+        return {
+            "error": True,
+            "message": "Tidak ada data uji ditemukan."
+        }
 
     # Load model dan label encoder dari file
     model_path = 'model/random_forest.pkl'
     encoder_path = 'model/label_encoder.pkl'
 
     if not os.path.exists(model_path) or not os.path.exists(encoder_path):
-        print("Model belum dilatih.")
-        return
+        return {
+            "error": True,
+            "message": "Model belum dilatih."
+        }
 
     model = joblib.load(model_path)
     label_encoder = joblib.load(encoder_path)
@@ -151,8 +155,10 @@ def test_image_modelv2():
             y_true.append(img.note)
 
     if not X_test:
-        print("Tidak ada fitur valid dari data uji.")
-        return
+        return {
+            "error": True,
+            "message": "Fitur data uji kosong."
+        }
 
     # Konversi data uji ke array NumPy
     X_test = np.array(X_test)
