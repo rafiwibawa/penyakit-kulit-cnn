@@ -63,6 +63,7 @@ def upload_uji():
 
     images = Image.query.order_by(Image.upload_time.desc()).all() 
     print("[Upload Uji] Session in GET:", dict(session))
+    # session.pop('hasil_uji', None)
     return render_template('uji.html', images=images)
 
 @bp_uji.route('/uji-model-old', methods=["GET", "POST"])
@@ -73,13 +74,13 @@ def test_model_old():
     # Potong report hanya baris pertama (atau sebagian kecil)
     short_report = "\n".join(hasil["report"].split("\n")[:5]) + "\n..."
 
-    session['hasil_uji'] = {
+    session['hasil_uji_old'] = {
         "accuracy": hasil["accuracy"],
         "f1_score": hasil["f1_score"],
         "report": short_report
     }
     
-    print("[Set Session] session['hasil_uji']:", session['hasil_uji'])
+    print("[Set Session] session['hasil_uji_old']:", session['hasil_uji_old'])
     flash("Model berhasil diuji pada data uji.")
     return redirect(url_for('uji.upload_uji'))
 
@@ -116,7 +117,7 @@ def test_model():
     return redirect(url_for('uji.upload_uji'))
 
 
-@bp_uji.route('/delete-image/<int:image_id>', methods=['POST'])
+@bp_uji.route('/delete-image/<int:image_id>', methods=['GET'])
 def delete_image(image_id):
     image = Image.query.get_or_404(image_id)
     # Hapus file dari sistem file
@@ -126,4 +127,4 @@ def delete_image(image_id):
     db.session.delete(image)
     db.session.commit()
     flash('Gambar berhasil dihapus.', 'success')
-    return redirect(url_for('latih.upload_latih'))
+    return redirect(url_for('uji.upload_uji'))

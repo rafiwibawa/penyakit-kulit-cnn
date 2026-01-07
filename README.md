@@ -12,6 +12,8 @@ pip install scikit-learn
 pip install tensorflow
 pip install Pillow 
 pip install scikit-image
+pip install weasyprint
+
 
 pip freeze > requirements.txt
 

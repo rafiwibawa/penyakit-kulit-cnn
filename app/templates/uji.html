@@ -9,10 +9,10 @@
 {% block content %} 
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-  <h1 class="h3 mb-0 text-gray-800">Data</h1>
+  <h1 class="h3 mb-0 text-gray-800">Data Uji</h1>
   <div class="d-flex align-items-center gap-2">
     <form method="post" action="{{ url_for('uji.test_model') }}">
-      <button type="submit" class="btn btn-secondary mr-2">Training Model</button>
+      <!-- <button type="submit" class="btn btn-secondary mr-2">Training Model</button> -->
     </form> 
     <form method="post" action="{{ url_for('uji.test_model_old') }}">
       <button type="submit" class="btn btn-secondary mr-2">Uji</button>
@@ -22,6 +22,19 @@
     </button>
   </div>
 </div> 
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
 {% with hasil = session.get('hasil_uji') %}
   {% if hasil %}
     <div class="alert alert-info mt-3">
@@ -51,18 +64,18 @@
   {% endif %}
 {% endwith %}
 
-<!-- {% if 'hasil_uji' in session %}
+{% if 'hasil_uji_old' in session %}
 <div class="row mb-3">
   <div class="col-lg-12">
     <div class="alert alert-info shadow-sm">
       <h5 class="mb-2"><strong>Hasil Uji Model</strong></h5>
-      <p><strong>Akurasi:</strong> {{ session['hasil_uji']['accuracy'] }}</p>
-      <p><strong>F1 Score:</strong> {{ session['hasil_uji']['f1_score'] }}</p>
-      <pre class="bg-light p-2 rounded" style="white-space: pre-wrap;">{{ session['hasil_uji']['report'] }}</pre>
+      <p><strong>Akurasi:</strong> {{ session['hasil_uji_old']['accuracy'] }}</p>
+      <p><strong>F1 Score:</strong> {{ session['hasil_uji_old']['f1_score'] }}</p>
+      <pre class="bg-light p-2 rounded" style="white-space: pre-wrap;">{{ session['hasil_uji_old']['report'] }}</pre>
     </div>
   </div>
 </div>
-{% endif %} -->
+{% endif %}
 
 <div class="row"> 
   <div class="col-lg-12"> 
@@ -95,7 +108,7 @@
                     <td>{{ img.note }}</td>
                     <td>{{ img.tipe_data }}</td>
                     <td>
-                      <form method="POST" action="{{ url_for('uji.delete_image', image_id=img.id) }}">
+                      <form method="GET" action="{{ url_for('uji.delete_image', image_id=img.id) }}">
                         <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
                       </form>                    
                     </td>

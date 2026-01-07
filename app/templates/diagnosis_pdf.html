@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <title>Laporan Diagnosis Pasien</title>
+
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 11pt;
+            color: #333;
+        }
+
+        /* ================= HEADER ================= */
+        .header {
+            background-color: #4e73df;
+            color: #ffffff;
+            padding: 15px;
+        }
+
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background-color: #ffffff;
+            color: #4e73df;
+            text-align: center;
+            font-size: 26pt;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+
+        .hospital-info h1 {
+            font-size: 16pt;
+            margin: 0;
+        }
+
+        .hospital-info p {
+            font-size: 9pt;
+            margin: 2px 0;
+        }
+
+        /* ================= TITLE ================= */
+        .title {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18pt;
+            font-weight: bold;
+            color: #4e73df;
+            border-bottom: 3px solid #4e73df;
+            padding-bottom: 8px;
+        }
+
+        /* ================= SECTION ================= */
+        .section-header {
+            background-color: #4e73df;
+            color: #ffffff;
+            padding: 8px 10px;
+            font-weight: bold;
+            margin-top: 25px;
+            font-size: 12pt;
+        }
+
+        /* ================= INFO TABLE ================= */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #f8f9fa;
+            border-left: 4px solid #4e73df;
+        }
+
+        .info-table td {
+            padding: 10px;
+            vertical-align: top;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        /* ================= DATA TABLE ================= */
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            table-layout: fixed;
+        }
+
+        table.data-table th {
+            background-color: #4e73df;
+            color: #ffffff;
+            padding: 10px;
+            border: 1px solid #2e59d9;
+            font-size: 10pt;
+        }
+
+        table.data-table td {
+            padding: 8px;
+            border: 1px solid #cccccc;
+            font-size: 9.5pt;
+            word-wrap: break-word;
+        }
+
+        table.data-table tr:nth-child(even) td {
+            background-color: #f2f2f2;
+        }
+
+        /* ================= CONFIDENCE ================= */
+        .confidence-cell {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .confidence-high {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .confidence-medium {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .confidence-low {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* ================= EMPTY ================= */
+        .empty {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            background-color: #f8f9fa;
+            border: 1px solid #cccccc;
+        }
+
+        /* ================= SIGNATURE ================= */
+        .signature {
+            margin-top: 40px;
+            text-align: right;
+        }
+
+        .signature-box {
+            width: 220px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .signature-line {
+            border-top: 2px solid #333;
+            margin-top: 60px;
+            padding-top: 5px;
+            font-weight: bold;
+        }
+
+        /* ================= FOOTER ================= */
+        .footer {
+            margin-top: 40px;
+            border-top: 3px solid #4e73df;
+            padding: 10px;
+            font-size: 9pt;
+            background-color: #f8f9fa;
+        }
+
+        .footer-table {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <table class="header-table">
+        <tr>
+            <td class="logo">RS</td>
+            <td class="hospital-info">
+                <h1>RUMAH SAKIT UMUM PUSAT</h1>
+                <p>Jl. Kesehatan No. 123, Jakarta Pusat 10110</p>
+                <p>Telp: (021) 1234-5678 | Email: info@rsup.co.id</p>
+                <p>Website: www.rsup.co.id</p>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<!-- TITLE -->
+<div class="title">LAPORAN DIAGNOSIS PASIEN</div>
+
+<!-- DATA PASIEN -->
+<div class="section-header">Data Pasien</div>
+<table class="info-table">
+    <tr>
+        <td>
+            <span class="info-label">Nama</span>
+            {{ patient.name }}
+        </td>
+        <td>
+            <span class="info-label">Jenis Kelamin</span>
+            {{ patient.gender }}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span class="info-label">Tanggal Lahir</span>
+            {{ patient.birth_date }}
+        </td>
+        <td>
+            <span class="info-label">No. Telepon</span>
+            {{ patient.phone or '-' }}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <span class="info-label">Alamat</span>
+            {{ patient.address or '-' }}
+        </td>
+    </tr>
+</table>
+
+<!-- HASIL PREDIKSI -->
+<div class="section-header">Hasil Prediksi Sistem (CNN)</div>
+
+{% if images %}
+<table class="data-table">
+    <tr>
+        <th width="40">No</th>
+        <th>Detail Gambar & Prediksi</th>
+        <th width="120">Confidence</th>
+    </tr>
+    {% for img in images if img.prediction %}
+    {% set conf = img.prediction.confidence * 100 %}
+   <tr>
+        <td>{{ loop.index }}</td>
+
+        <td>
+            <b>File:</b><br/>
+            {{ img.image_path }}<br/><br/>
+
+            <b>Prediksi:</b><br/>
+            {{ img.prediction.predicted_label }}
+        </td>
+
+        {% if conf >= 85 %}
+            <td class="confidence-cell confidence-high">{{ "%.2f"|format(conf) }}%</td>
+        {% elif conf >= 70 %}
+            <td class="confidence-cell confidence-medium">{{ "%.2f"|format(conf) }}%</td>
+        {% else %}
+            <td class="confidence-cell confidence-low">{{ "%.2f"|format(conf) }}%</td>
+        {% endif %}
+    </tr>
+
+    {% endfor %}
+</table>
+{% else %}
+<div class="empty">Tidak ada hasil prediksi</div>
+{% endif %}
+
+<!-- DIAGNOSIS -->
+<div class="section-header">Diagnosis & Kesimpulan Dokter</div>
+
+{% if diagnoses %}
+<table class="data-table">
+    <tr>
+        <th width="40">No</th>
+        <th>Diagnosis</th>
+        <th width="120">Tanggal</th>
+        <th width="200">Dokter</th>
+    </tr>
+    {% for d in diagnoses %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ d.diagnosis }}</td>
+        <td>{{ d.created_at.strftime('%d-%m-%Y') if d.created_at else '-' }}</td>
+        <td>{{ d.user.email if d.user else '-' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<div class="empty">Belum ada diagnosis dokter</div>
+{% endif %}
+
+<!-- SIGNATURE -->
+<div class="signature">
+    <div class="signature-box">
+        Dokter Penanggung Jawab
+        <div class="signature-line">dr. Specialist, Sp.Rad</div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    <table class="footer-table">
+        <tr>
+            <td>
+                Dokumen ini dicetak secara otomatis dan sah tanpa tanda tangan basah<br />
+                © 2025 Rumah Sakit Umum Pusat
+            </td>
+            <td align="right">
+                Dicetak: {{ generated_at.strftime('%d-%m-%Y %H:%M') }}
+            </td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>

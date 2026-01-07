@@ -34,14 +34,21 @@ def train_image_model():
 
     model = RandomForestClassifier(n_estimators=100)
     model.fit(X_train, y_train)
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    MODEL_DIR = os.path.join(BASE_DIR, "model")
 
     y_pred = model.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
     f1 = f1_score(y_test, y_pred, average='weighted')
 
     os.makedirs('model', exist_ok=True)
-    joblib.dump(model, 'model/random_forest.pkl')
-    joblib.dump(le, 'model/label_encoder.pkl')
+    # joblib.dump(model, 'model/random_forest.pkl')
+    # joblib.dump(le, 'model/label_encoder.pkl')
+    MODEL_PATH = os.path.join(MODEL_DIR, "random_forest.pkl")
+    LE_PATH = os.path.join(MODEL_DIR, "label_encoder.pkl")
+
+    joblib.dump(model, MODEL_PATH)
+    joblib.dump(le, LE_PATH)
 
     log = ModelLog(
         model_name='MobileNet + RandomForest',
